@@ -1,13 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="202.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursework.fxControllers.Login">
+<AnchorPane prefHeight="320.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursework.fxControllers.Login">
    <children>
-      <TextField fx:id="loginField" layoutX="36.0" layoutY="24.0" />
-      <PasswordField fx:id="pswField" layoutX="36.0" layoutY="68.0" />
-      <Button layoutX="36.0" layoutY="139.0" mnemonicParsing="false" onAction="#validateAndLoad" text="Log in" />
-      <Button layoutX="134.0" layoutY="139.0" mnemonicParsing="false" onAction="#newUserForm" text="Register" />
+      <VBox alignment="CENTER" layoutX="50.0" layoutY="15.0" prefHeight="290.0" prefWidth="300.0" spacing="10.0">
+         <children>
+            <Label text="Book Exchange Login" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            
+            <Separator prefWidth="200.0">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+            </Separator>
+            
+            <Label text="Username/Login:" />
+            <TextField fx:id="loginField" prefWidth="250.0" promptText="Enter your username" />
+            
+            <Label text="Password:" />
+            <PasswordField fx:id="pswField" prefWidth="250.0" promptText="Enter your password" />
+            
+            <HBox alignment="CENTER" spacing="15.0">
+               <VBox.margin>
+                  <Insets top="15.0" />
+               </VBox.margin>
+               <children>
+                  <Button defaultButton="true" minWidth="100.0" mnemonicParsing="false" onAction="#validateAndLoad" style="-fx-background-color: #4CAF50;" text="Log in" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Button>
+                  <Button minWidth="100.0" mnemonicParsing="false" onAction="#newUserForm" style="-fx-background-color: #2196F3;" text="Register" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            
+            <Label text="Don't have an account? Click Register to create one." textAlignment="CENTER">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

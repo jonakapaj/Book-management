@@ -12,14 +12,11 @@ import java.util.List;
 @Setter
 public class BookExchange {
     private List<Publication> allPublications;
+    @Getter
     private List<User> allUsers;
 
     public BookExchange() {
         this.allPublications = new ArrayList<>();
         this.allUsers = new ArrayList<>();
-    }
-
-    public List<User> getAllUsers() {
-        return allUsers;
     }
 }

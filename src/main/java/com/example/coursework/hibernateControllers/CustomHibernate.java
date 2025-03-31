@@ -1,6 +1,7 @@
 package com.example.coursework.hibernateControllers;
 
 import com.example.coursework.model.Client;
+import com.example.coursework.model.Comment;
 import com.example.coursework.model.Publication;
 import com.example.coursework.model.User;
 import com.example.coursework.model.enums.PublicationStatus;
@@ -60,6 +61,41 @@ public class CustomHibernate extends GenericHibernate {
             CriteriaQuery<Publication> q = cb.createQuery(Publication.class);
             Root<Publication> root = q.from(Publication.class);
             q.select(root).where(cb.equal(root.get("owner"), client));
+
+            Query query = entityManager.createQuery(q);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ArrayList<>();
+    }
+
+    public List<Publication> getPublicationsByStatus(PublicationStatus status) {
+        try {
+            entityManager = createEntityManager(entityManagerFactory);
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Publication> q = cb.createQuery(Publication.class);
+            Root<Publication> root = q.from(Publication.class);
+            q.select(root).where(cb.equal(root.get("publicationStatus"), status));
+
+            Query query = entityManager.createQuery(q);
+            return query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ArrayList<>();
+    }
+
+    //getCommentsByPublication
+    public List<Comment> getCommentsByPublication(Publication publication) {
+        try {
+            entityManager = createEntityManager(entityManagerFactory);
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Comment> q = cb.createQuery(Comment.class);
+            Root<Comment> root = q.from(Comment.class);
+            q.select(root).where(cb.equal(root.get("publication"), publication));
 
             Query query = entityManager.createQuery(q);
             return query.getResultList();

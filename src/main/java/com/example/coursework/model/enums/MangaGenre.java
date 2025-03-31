@@ -1,6 +1,5 @@
 package com.example.coursework.model.enums;
 
 public enum MangaGenre {
-    //TODO google manga genres
-    SHOUNEN, SHOUJO //I do not remember, google this
+    SHOUNEN, SHOUJO, SEINEN, JOSEI, KODOMO, YAOI, YURI, ISEKAI, FANTASY, ACTION, ADVENTURE, COMEDY, DRAMA, HORROR, MYSTERY, ROMANCE, SCI_FI, THRILLER
 }

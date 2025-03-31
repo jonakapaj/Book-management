@@ -32,4 +32,11 @@ public class Manga extends Publication implements Serializable {
         this.illustrator = illustrator;
         this.volume = volume;
     }
+
+    public void setCreationDate(LocalDateTime now) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setCreationDate'");
+    }
+
+
 }

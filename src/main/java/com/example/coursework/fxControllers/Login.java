@@ -32,6 +32,17 @@ public class Login {
     }
 
     public void validateAndLoad() throws IOException {
+        // Validate input fields first
+        if (loginField.getText().isEmpty() || pswField.getText().isEmpty()) {
+            JavaFxUtils.generateAlert(Alert.AlertType.WARNING, "Input Error", "Username and password cannot be empty");
+            return;
+        }
+        
+        if (pswField.getText().length() < 6) {
+            JavaFxUtils.generateAlert(Alert.AlertType.WARNING, "Input Error", "Password must be at least 6 characters long");
+            return;
+        }
+        
         // Check if user with given credentials exists
         User user = customHibernate.getUserByCredentials(loginField.getText(), pswField.getText());
         if (user != null) {

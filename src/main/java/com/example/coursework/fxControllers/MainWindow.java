@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -50,7 +51,7 @@ public class MainWindow implements Initializable {
     @FXML
     public TextArea aboutBook;
     @FXML
-    public TreeView<Comment> commentTreeField;
+    public ListView<String> commentListView;
     @FXML
     public ListView<Publication> availableBookList;
     @FXML
@@ -61,6 +62,20 @@ public class MainWindow implements Initializable {
     public CheckBox colorCheckbox;
     @FXML
     public TextField illustratorField;
+    @FXML
+    private TableView<User> userTableView;
+    @FXML
+    private TableColumn<User, Long> idColumn;
+    @FXML
+    private TableColumn<User, String> nameColumn;
+    @FXML
+    private TableColumn<User, String> surnameColumn;
+    @FXML
+    private TableColumn<User, String> emailColumn;
+    @FXML
+    private TableColumn<User, String> phoneNumberColumn;
+    @FXML
+    private TableColumn<User, String> employmentDurationColumn;
     @FXML
     public TextField volumeField;
     CustomHibernate customHibernate;
@@ -73,15 +88,21 @@ public class MainWindow implements Initializable {
         formatField.getItems().addAll(Format.values());
         genreField.getItems().addAll(Genre.values());
         languageField.getItems().addAll(Language.values());
-        availableBookList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> loadPublicationInfo());
-        myPublicationListField.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("Selected item in myPublicationListField: " + newValue); // Add this line
-            loadPublicationInfo();
-        });
+        mangaLanguageField.getItems().addAll(Language.values());
+        mangaGenreField.getItems().addAll(MangaGenre.values());
+        availableBookList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> loadReviews());
+        myPublicationListField.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> loadPublicationInfo());
         disableFields();
         toggleMangaFields();
         radioBook.setOnAction(event -> toggleMangaFields());
         radioManga.setOnAction(event -> toggleMangaFields());
+
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        surnameColumn.setCellValueFactory(new PropertyValueFactory<>("surname"));
+        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+        phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
+
     }
 
     //This is executed after initialize, so do not put eny code that requires db in initialize
@@ -92,9 +113,6 @@ public class MainWindow implements Initializable {
         loadPublications();
     }
 
-    //Use CTRL+ALT+T for code folding and code organization into sections
-
-    //<editor-fold desc="Publication Tab">
     public void createNewPublication() {
         try {
             if (radioBook.isSelected()) {
@@ -144,7 +162,6 @@ public class MainWindow implements Initializable {
         myPublicationListField.getItems().clear();
         List<Publication> publications = customHibernate.getAllRecords(Publication.class);
         myPublicationListField.getItems().addAll(publications);
-        System.out.println("Publications in myPublicationListField: " + publications); // Add this line
         availableBookList.getItems().clear();
         availableBookList.getItems().addAll(customHibernate.getAvailablePublications());
     }
@@ -204,17 +221,18 @@ public class MainWindow implements Initializable {
 
     public void disableFields() {
         boolean isBookSelected = radioBook.isSelected();
+        boolean isMangaSelected = radioManga.isSelected();
         formatField.setDisable(!isBookSelected);
         genreField.setDisable(!isBookSelected);
         languageField.setDisable(!isBookSelected);
         publisherField.setDisable(!isBookSelected);
         isbnField.setDisable(!isBookSelected);
 
-        mangaGenreField.setDisable(isBookSelected);
-        mangaLanguageField.setDisable(isBookSelected);
-        colorCheckbox.setDisable(isBookSelected);
-        illustratorField.setDisable(isBookSelected);
-        volumeField.setDisable(isBookSelected);
+        mangaGenreField.setDisable(isMangaSelected);
+        mangaLanguageField.setDisable(isMangaSelected);
+        colorCheckbox.setDisable(isMangaSelected);
+        illustratorField.setDisable(isMangaSelected);
+        volumeField.setDisable(isMangaSelected);
     }
 
     public void clearPublicationFields() {
@@ -249,20 +267,73 @@ public class MainWindow implements Initializable {
 
     //<editor-fold desc="Main tab functionality">
     public void loadReviewForm() {
-        //TODO create fxml for the new comment entry
+        Publication selectedPublication = availableBookList.getSelectionModel().getSelectedItem();
+        if (selectedPublication != null) {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("review-form.fxml"));
+                Parent parent = fxmlLoader.load();
+                ReviewForm reviewFormController = fxmlLoader.getController();
+                reviewFormController.setPublication(selectedPublication);
+                Stage stage = new Stage();
+                reviewFormController.setDialogStage(stage);
+                reviewFormController.setEntityManagerFactory(entityManagerFactory); // Pass EntityManagerFactory
+
+                Scene scene = new Scene(parent);
+                stage.setTitle("Submit Review");
+                stage.setScene(scene);
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.showAndWait(); // Show and wait for the user to interact
+                loadPublications(); // Refresh the publication list after review
+
+            } catch (IOException e) {
+                JavaFxUtils.generateAlert(Alert.AlertType.ERROR, "Error", "Could not load review form.");
+                e.printStackTrace();
+            }
+        } else {
+            JavaFxUtils.generateAlert(Alert.AlertType.WARNING, "Warning", "Please select a publication to review.");
+        }
+        loadComments(selectedPublication);
+    }
+
+    public void loadComments(Publication publication) {
+        // load comments to list view
+
+
+    }
+
+    private TreeItem<Comment> buildCommentTree(Comment comment) {
+        TreeItem<Comment> root = new TreeItem<>(comment);
+        for (Comment reply : comment.getReplies()) {
+            root.getChildren().add(buildCommentTree(reply));
+        }
+        return root;
     }
 
     public void requestPublication() {
         //We will do this later
     }
 
+    public void loadReviews() {
+        Publication publication = availableBookList.getSelectionModel().getSelectedItem();
+        if (publication != null) {
+            List<String> comments = customHibernate
+                    .getCommentsByPublication(publication)
+                    .stream()
+                    .map(Comment::getTitle)
+                    .toList();
+            commentListView.getItems().clear();
+            commentListView.getItems().addAll(comments);
+        }
+    }
+
     public void loadPublicationInfo() {
         Publication publication = myPublicationListField.getSelectionModel().getSelectedItem();
+
         if (publication != null) {
             publicationTitleField.setText(publication.getTitle());
             publicationDescriptionField.setText(publication.getDescription());
             authorField.setText(publication.getAuthor());
-            if (publication instanceof Book book) { // Using pattern matching for instanceof
+            if (publication instanceof Book book) {
                 formatField.setValue(book.getFormat());
                 genreField.setValue(book.getGenre());
                 languageField.setValue(book.getLanguage());
@@ -270,17 +341,19 @@ public class MainWindow implements Initializable {
                 isbnField.setText(book.getIsbn());
                 radioBook.setSelected(true);
                 radioManga.setSelected(false);
-            } else if (publication instanceof Manga manga) { // Using pattern matching
+            } else if (publication instanceof Manga manga) {
                 mangaGenreField.setValue(manga.getMangaGenre());
                 mangaLanguageField.setValue(manga.getOriginalLanguage());
                 colorCheckbox.setSelected(manga.isColor());
                 illustratorField.setText(manga.getIllustrator());
                 volumeField.setText(String.valueOf(manga.getVolume()));
-                radioManga.setSelected(true);
                 radioBook.setSelected(false);
+                radioManga.setSelected(true);
             }
             disableFields();
+
         }
+
     }
 
     //</editor-fold>
@@ -302,6 +375,64 @@ public class MainWindow implements Initializable {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
+        loadUsers();
     }
-    //</editor-fold>
+
+    public void loadUsers() {
+        List<User> users = customHibernate.getAllRecords(User.class);
+        userTableView.getItems().clear();
+        userTableView.getItems().addAll(users);
+    }
+
+    //Implementing user management functionality
+    public void updateUser() {
+        User selectedUser = userTableView.getSelectionModel().getSelectedItem();
+        if (selectedUser != null) {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("registration.fxml"));
+                Parent parent = fxmlLoader.load();
+                Registration registration = fxmlLoader.getController();
+                
+                // Set data and pass the selected user for editing
+                registration.setDataForEdit(entityManagerFactory, selectedUser);
+                
+                Stage stage = new Stage();
+                Scene scene = new Scene(parent);
+                stage.setTitle("Edit User");
+                stage.setScene(scene);
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.showAndWait();
+                loadUsers(); // Refresh users list after editing
+            } catch (Exception e) {
+                JavaFxUtils.generateAlert(Alert.AlertType.ERROR, "Error", "Could not update user.");
+                e.printStackTrace();
+            }
+        } else {
+            JavaFxUtils.generateAlert(Alert.AlertType.WARNING, "Warning", "No user selected to update.");
+        }
+    }
+    
+    public void deleteUser() {
+        User selectedUser = userTableView.getSelectionModel().getSelectedItem();
+        if (selectedUser != null) {
+            try {
+                Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmDialog.setTitle("Confirm Delete");
+                confirmDialog.setHeaderText("Delete User");
+                confirmDialog.setContentText("Are you sure you want to delete user: " + 
+                                         selectedUser.getName() + " " + selectedUser.getSurname() + "?");
+                
+                if (confirmDialog.showAndWait().get() == ButtonType.OK) {
+                    customHibernate.delete(User.class, selectedUser.getId());
+                    loadUsers();
+                    JavaFxUtils.generateAlert(Alert.AlertType.INFORMATION, "Success", "User deleted successfully");
+                }
+            } catch (Exception e) {
+                JavaFxUtils.generateAlert(Alert.AlertType.ERROR, "Error", "Could not delete user.");
+                e.printStackTrace();
+            }
+        } else {
+            JavaFxUtils.generateAlert(Alert.AlertType.WARNING, "Warning", "No user selected to delete.");
+        }
+    }
 }
