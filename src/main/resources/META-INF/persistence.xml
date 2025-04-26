@@ -8,9 +8,9 @@
             <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.NoJtaPlatform"/>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:mysql://sql7.freesqldatabase.com/sql7770264?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-            <property name="jakarta.persistence.jdbc.user" value="sql7770264"/>
-            <property name="jakarta.persistence.jdbc.password" value="iTRIhth2vk"/>
+                      value="jdbc:mysql://localhost:3306/booksnmanga?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value="jona"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
