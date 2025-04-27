@@ -86,5 +86,17 @@ public class GenericHibernate {
         return list;
     }
 
-
+    public <T> T getById(Class<T> entityClass, int id) {
+        EntityManager em = createEntityManager(entityManagerFactory);
+        try {
+            return em.find(entityClass, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
 }

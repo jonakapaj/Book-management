@@ -7,6 +7,8 @@ module com.example.coursework {
     requires org.hibernate.orm.core;
     requires transitive jakarta.persistence;
     requires java.naming;
+    requires com.google.gson;
+    requires transitive jdk.httpserver;
 
     requires org.kordamp.bootstrapfx.core;
 
@@ -23,4 +25,8 @@ module com.example.coursework {
     opens com.example.coursework.model to javafx.fxml, org.hibernate.orm.core, jakarta.persistence;
     
     exports com.example.coursework.model.enums;
+    exports com.example.coursework.webserver;
+    exports com.example.coursework.webserver.handlers;
+    exports com.example.coursework.hibernateControllers;
+    opens com.example.coursework.hibernateControllers to org.hibernate.orm.core;
 }
