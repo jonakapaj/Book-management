@@ -12,11 +12,15 @@ module com.example.coursework {
 
     opens com.example.coursework to javafx.fxml;
     exports com.example.coursework;
+    
     exports com.example.coursework.consoleFunctionality;
     opens com.example.coursework.consoleFunctionality to javafx.fxml;
-    exports com.example.coursework.fxControllers to  javafx.fxml, org.hibernate.orm.core;
+    
+    exports com.example.coursework.fxControllers;
     opens com.example.coursework.fxControllers to javafx.fxml, org.hibernate.orm.core;
+    
     exports com.example.coursework.model;
     opens com.example.coursework.model to javafx.fxml, org.hibernate.orm.core, jakarta.persistence;
+    
     exports com.example.coursework.model.enums;
 }
